@@ -8,6 +8,17 @@ async function updateBusStatus(busId, status) {
   console.log(`Bus ${busId} status changed to ${status}`);
 }
 
+async function getBusStatus(busId) {
+  const doc = await db.collection("buses").doc(busId).get();
+
+  if (!doc.exists) {
+    return null;
+  }
+
+  return doc.data().status;
+}
+
 module.exports = {
-  updateBusStatus
+  updateBusStatus,
+  getBusStatus
 };
