@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>YUKTIX | Conductor Operations</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <link rel="stylesheet" href="conductor.css" />
+  </head>
+
+  <body>
+    <!-- ================= HEADER ================= -->
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">Y</div>
+
+        <div class="brand-text">
+          <h1>YUKTIX</h1>
+          <span>CONDUCTOR OPERATIONS</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="live-status">
+          <span id="connectionDot"></span>
+
+          <div>
+            <strong id="connectionText"> LIVE SYSTEM </strong>
+
+            <small> Real-time connection </small>
+          </div>
+        </div>
+
+        <div class="header-divider"></div>
+
+        <div class="clock">
+          <strong id="liveClock"> --:--:-- </strong>
+
+          <span> LOCAL TIME </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+      <!-- PAGE HEADING -->
+
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow">
+            <span></span>
+            CONDUCTOR CONTROL
+          </div>
+
+          <h2>Trip Operations</h2>
+
+          <p>Manage your assigned bus and monitor the active route.</p>
+        </div>
+
+        <div class="bus-selector">
+          <label for="busSelect"> ASSIGNED BUS </label>
+
+          <select id="busSelect">
+            <option value="BUS101">BUS101</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- ================= BUS OVERVIEW ================= -->
+
+      <section class="bus-overview">
+        <div class="bus-main">
+          <div class="bus-icon">BUS</div>
+
+          <div>
+            <span class="small-label"> CURRENT VEHICLE </span>
+
+            <h3 id="busId">BUS101</h3>
+
+            <p id="routeName">Loading route...</p>
+          </div>
+        </div>
+
+        <div class="trip-status">
+          <span class="small-label"> SERVICE STATUS </span>
+
+          <strong id="serviceStatus"> CONNECTING </strong>
+        </div>
+
+        <div class="speed-display">
+          <span class="small-label"> CURRENT SPEED </span>
+
+          <strong id="currentSpeed"> 0 </strong>
+
+          <span> km/h </span>
+        </div>
+      </section>
+
+      <!-- ================= TRIP CONTROLS ================= -->
+
+      <section class="control-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="section-label"> TRIP CONTROL </span>
+
+            <h3>Service Management</h3>
+
+            <p>Control the current trip status.</p>
+          </div>
+        </div>
+
+        <div class="trip-controls">
+          <button id="startTripBtn" class="action-btn start">
+            <span>▶</span>
+            START TRIP
+          </button>
+
+          <button id="endTripBtn" class="action-btn end">
+            <span>■</span>
+            END TRIP
+          </button>
+        </div>
+
+        <div class="status-section">
+          <span class="status-title"> UPDATE SERVICE STATUS </span>
+
+          <div class="status-buttons">
+            <button class="status-btn on-time" data-status="ON_TIME">
+              <span></span>
+              ON TIME
+            </button>
+
+            <button class="status-btn delayed" data-status="DELAYED">
+              <span></span>
+              DELAYED
+            </button>
+
+            <button class="status-btn stopped" data-status="STOPPED">
+              <span></span>
+              STOPPED
+            </button>
+
+            <button class="status-btn breakdown" data-status="BREAKDOWN">
+              <span></span>
+              BREAKDOWN
+            </button>
+          </div>
+        </div>
+
+        <div id="actionMessage" class="action-message"></div>
+      </section>
+
+      <!-- ================= LIVE INFORMATION ================= -->
+
+      <section class="info-grid">
+        <div class="info-card">
+          <span class="info-label"> CURRENT STOP </span>
+
+          <strong id="currentStop"> -- </strong>
+
+          <small> Bus's current location </small>
+        </div>
+
+        <div class="info-card">
+          <span class="info-label"> NEXT STOP </span>
+
+          <strong id="nextStop"> -- </strong>
+
+          <small> Upcoming destination </small>
+        </div>
+
+        <div class="info-card">
+          <span class="info-label"> ETA </span>
+
+          <strong id="eta"> -- </strong>
+
+          <small> Estimated arrival </small>
+        </div>
+
+        <div class="info-card">
+          <span class="info-label"> ROUTE </span>
+
+          <strong id="routeId"> -- </strong>
+
+          <small id="routeStops"> Route information </small>
+        </div>
+      </section>
+
+      <!-- ================= MAP ================= -->
+
+      <section class="panel map-panel">
+        <div class="panel-heading map-heading">
+          <div>
+            <span class="section-label"> LIVE LOCATION </span>
+
+            <h3>Bus Location</h3>
+
+            <p>Your current position on the route.</p>
+          </div>
+
+          <button id="centerBusBtn" class="secondary-btn">⌖ CENTER BUS</button>
+        </div>
+
+        <div class="map-wrapper">
+          <div id="map"></div>
+
+          <div class="map-live">
+            <span></span>
+
+            LIVE LOCATION
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ROUTE STOPS ================= -->
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <span class="section-label"> ROUTE INFORMATION </span>
+
+            <h3>Route Stops</h3>
+
+            <p>Stops included in your current route.</p>
+          </div>
+        </div>
+
+        <div id="stopsList" class="stops-list">
+          <div class="loading">Loading route stops...</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+      <div>
+        <strong>YUKTIX</strong>
+        <span>Real-Time Public Transport Intelligence</span>
+      </div>
+
+      <div>CONDUCTOR TERMINAL</div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="conductor.js"></script>
+  </body>
+</html>

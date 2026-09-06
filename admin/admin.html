@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>YUKTIX | Transport Operations Center</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Leaflet -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+
+  <body>
+    <!-- ================= HEADER ================= -->
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">Y</div>
+
+        <div class="brand-text">
+          <h1>YUKTIX</h1>
+          <span>PUBLIC TRANSPORT OPERATIONS</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="system-status">
+          <span class="status-dot"></span>
+
+          <div>
+            <strong id="connectionText">LIVE SYSTEM</strong>
+            <small>Real-time monitoring</small>
+          </div>
+        </div>
+
+        <div class="header-divider"></div>
+
+        <div class="clock">
+          <strong id="liveClock">--:--:--</strong>
+          <span>LOCAL TIME</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+      <!-- PAGE TITLE -->
+
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow">
+            <span></span>
+            CONTROL CENTER
+          </div>
+
+          <h2>Fleet Operations Dashboard</h2>
+
+          <p>Monitor buses, routes and service performance in real time.</p>
+        </div>
+
+        <div class="system-time-box">
+          <span>SYSTEM STATUS</span>
+
+          <strong>
+            <i id="systemStatusDot"></i>
+            OPERATIONAL
+          </strong>
+        </div>
+      </section>
+
+      <!-- ================= KPI CARDS ================= -->
+
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon blue">BUS</div>
+
+          <div class="kpi-content">
+            <span>TOTAL FLEET</span>
+            <strong id="totalBuses">0</strong>
+            <small>Registered buses</small>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon green">LIVE</div>
+
+          <div class="kpi-content">
+            <span>ACTIVE BUSES</span>
+            <strong id="activeBuses">0</strong>
+            <small>Currently operating</small>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon amber">DELAY</div>
+
+          <div class="kpi-content">
+            <span>DELAYED</span>
+            <strong id="delayedBuses">0</strong>
+            <small>Needs monitoring</small>
+          </div>
+        </div>
+
+        <div class="kpi-card critical">
+          <div class="kpi-icon red">!</div>
+
+          <div class="kpi-content">
+            <span>BREAKDOWN</span>
+            <strong id="breakdownBuses">0</strong>
+            <small>Critical incidents</small>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PERFORMANCE STRIP ================= -->
+
+      <section class="performance-grid">
+        <div class="performance-card">
+          <div class="performance-header">
+            <span>ON-TIME PERFORMANCE</span>
+            <strong id="onTimePercentage">0%</strong>
+          </div>
+
+          <div class="progress">
+            <div
+              id="onTimeProgress"
+              class="progress-bar green"
+              style="width: 0%"
+            ></div>
+          </div>
+
+          <small>Fleet operating within schedule</small>
+        </div>
+
+        <div class="performance-card">
+          <div class="performance-header">
+            <span>DELAY RATE</span>
+            <strong id="delayedPercentage">0%</strong>
+          </div>
+
+          <div class="progress">
+            <div
+              id="delayProgress"
+              class="progress-bar amber"
+              style="width: 0%"
+            ></div>
+          </div>
+
+          <small>Buses currently reporting delays</small>
+        </div>
+
+        <div class="performance-card">
+          <div class="performance-header">
+            <span>ACTIVE ROUTES</span>
+            <strong id="activeRoutes">0</strong>
+          </div>
+
+          <div class="performance-mini">
+            <span class="mini-dot"></span>
+            Routes currently in service
+          </div>
+        </div>
+
+        <div class="performance-card">
+          <div class="performance-header">
+            <span>AVERAGE SPEED</span>
+            <strong id="averageSpeed">0 km/h</strong>
+          </div>
+
+          <div class="performance-mini">
+            <span class="mini-speed">↗</span>
+            Current fleet movement
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= MAP ================= -->
+
+      <section class="panel map-panel">
+        <div class="panel-header">
+          <div>
+            <div class="section-label">LIVE OPERATIONS</div>
+
+            <h3>Fleet Location Monitor</h3>
+
+            <p>Real-time position of all active buses</p>
+          </div>
+
+          <div class="map-actions">
+            <button id="fitMapBtn" class="secondary-btn">⛶ FIT FLEET</button>
+
+            <button id="refreshMapBtn" class="primary-btn">↻ REFRESH</button>
+          </div>
+        </div>
+
+        <div class="map-wrapper">
+          <div id="map"></div>
+
+          <!-- MAP LIVE BADGE -->
+
+          <div class="map-live">
+            <span class="pulse"></span>
+
+            LIVE TRACKING
+          </div>
+
+          <!-- MAP LEGEND -->
+
+          <div class="map-legend">
+            <strong>BUS STATUS</strong>
+
+            <div>
+              <span class="legend-marker green"></span>
+              On Time
+            </div>
+
+            <div>
+              <span class="legend-marker amber"></span>
+              Delayed
+            </div>
+
+            <div>
+              <span class="legend-marker red"></span>
+              Breakdown
+            </div>
+
+            <div>
+              <span class="legend-marker gray"></span>
+              Stopped
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ROUTE PERFORMANCE ================= -->
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="section-label">SERVICE ANALYTICS</div>
+
+            <h3>Route Performance</h3>
+
+            <p>Current operational status by route</p>
+          </div>
+        </div>
+
+        <div id="routeAnalytics" class="route-grid">
+          <div class="loading-card">Loading route performance...</div>
+        </div>
+      </section>
+
+      <!-- ================= BUS TABLE ================= -->
+
+      <section class="panel bus-panel">
+        <div class="panel-header">
+          <div>
+            <div class="section-label">FLEET MANAGEMENT</div>
+
+            <h3>Live Bus Status</h3>
+
+            <p>Detailed operational information for every bus</p>
+          </div>
+
+          <div class="fleet-count">
+            <strong id="visibleBusCount">0</strong>
+            <span>BUSES SHOWN</span>
+          </div>
+        </div>
+
+        <!-- CONTROLS -->
+
+        <div class="table-controls">
+          <div class="search-box">
+            <span>⌕</span>
+
+            <input
+              type="text"
+              id="busSearch"
+              placeholder="Search bus, route or stop..."
+            />
+          </div>
+
+          <div class="filter-box">
+            <label for="statusFilter"> STATUS </label>
+
+            <select id="statusFilter">
+              <option value="ALL">All Buses</option>
+
+              <option value="ON_TIME">On Time</option>
+
+              <option value="DELAYED">Delayed</option>
+
+              <option value="STOPPED">Stopped</option>
+
+              <option value="BREAKDOWN">Breakdown</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>BUS</th>
+                <th>ROUTE</th>
+                <th>CURRENT LOCATION</th>
+                <th>NEXT STOP</th>
+                <th>SPEED</th>
+                <th>ETA</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+
+            <tbody id="busTable">
+              <tr>
+                <td colspan="7" class="table-loading">
+                  Connecting to fleet system...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-footer">
+          <span id="lastUpdated"> Last updated: -- </span>
+
+          <span> Auto-refresh: <strong>2 sec</strong> </span>
+        </div>
+      </section>
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+      <div>
+        <strong>YUKTIX</strong>
+        <span>Real-Time Public Transport Intelligence</span>
+      </div>
+
+      <div>SYSTEM VERSION 1.0</div>
+    </footer>
+
+    <!-- Leaflet -->
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Admin JS -->
+
+    <script src="admin.js"></script>
+  </body>
+</html>
